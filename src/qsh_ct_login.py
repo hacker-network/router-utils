@@ -41,12 +41,13 @@ if __name__ == "__main__":
   parser = ArgumentParser("qsh-ct-login")
   parser.add_argument("username")
   parser.add_argument("password")
+  parser.add_argument("--show-browser", help="show Chromium browser window", action="store_true")
   args = parser.parse_args()
 
   setup_root_logger("/dev/stderr")
 
   try:
-    login(args.username, args.password)
+    login(args.username, args.password, not args.show_browser)
   except Exception as e:
     error(f"Login failed: {e}")
     exit(1)
