@@ -17,7 +17,7 @@ def keepalive(username: str, password: str) -> int:
     if gwv4:
       break
     else:
-      warning(f"IPv4 gateway not found, restarting systemd-networkd ({i + 1})")
+      warning(f"IPv4 gateway not found, restarting systemd-networkd... ({i + 1})")
       systemctl_restart("systemd-networkd.service")
       time.sleep(3)
   else:
@@ -30,7 +30,7 @@ def keepalive(username: str, password: str) -> int:
     info("Seems network is online.")
     return 0
   else:
-    warning("Pinging 223.5.5.5 failed, trying to log in")
+    warning("Pinging 223.5.5.5 failed, trying to log in...")
     try:
       login(username, password)
     except TimeoutException:
@@ -40,6 +40,14 @@ def keepalive(username: str, password: str) -> int:
       error(f"Login failed: {e}")
       return 1
 
+  ping = subprocess.run(
+    ["ping", "-c1", "-W1", "223.5.5.5"], capture_output=True)
+  if ping.returncode == 0:
+    info("Network is online after login.")
+    return 0
+  else:
+    error("Pinging 223.5.5.5 still fails after login. Restarting systemd-networkd and try next time.")
+    return 1
 
 if __name__ == "__main__":
   from argparse import ArgumentParser
