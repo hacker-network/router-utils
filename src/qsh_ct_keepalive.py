@@ -43,16 +43,17 @@ def keepalive(username: str, password: str) -> int:
 
 if __name__ == "__main__":
   from argparse import ArgumentParser
-  from log import setup_root_logger
+  from logger import setup_root_logger
 
-  if os.geteuid() == 0:
+  parser = ArgumentParser("qsh-ct-keepalive")
+  parser.add_argument("username")
+  parser.add_argument("password")
+  parser.add_argument("-e", "--stderr", action="store_true")
+  args = parser.parse_args()
+
+  if os.geteuid() == 0 and not args.stderr:
     setup_root_logger("/var/log/qsh-ct-keepalive.log")
   else:
     setup_root_logger("/dev/stderr")
-
-  parser = ArgumentParser("qsh-ct-login")
-  parser.add_argument("username")
-  parser.add_argument("password")
-  args = parser.parse_args()
 
   exit(keepalive(args.username, args.password))
