@@ -8,7 +8,7 @@ from time import sleep
 login_gw = "http://172.25.249.64"
 
 
-def login(username: str, password: str, headless: bool = True) -> bool:
+def login(username: str, password: str, headless: bool = True):
   options = Options()
   if headless:
     options.add_argument("--headless")
