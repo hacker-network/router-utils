@@ -3,14 +3,15 @@ import pyroute2
 from socket import AF_INET, AF_INET6, AddressFamily
 
 
+# TODO: this requests the entire routing table, replace it with command line parsing
 def get_gateway(family: AddressFamily):
-  ipr = pyroute2.IPRoute()
-  default_routes = ipr.get_default_routes(family, 254)
-  if len(default_routes) == 0:
-    return None
-  else:
-    default_route = default_routes[0]
-    return next(filter(lambda x: x[0] == "RTA_GATEWAY", default_route["attrs"]))[1]
+  with pyroute2.IPRoute() as ipr:
+    default_routes = ipr.get_default_routes(family, 254)
+    if len(default_routes) == 0:
+      return None
+    else:
+      default_route = default_routes[0]
+      return next(filter(lambda x: x[0] == "RTA_GATEWAY", default_route["attrs"]))[1]
 
 
 if __name__ == "__main__":
@@ -32,5 +33,4 @@ if __name__ == "__main__":
       print(gw6)
     else:
       exit_code += 6
-
   exit(exit_code)

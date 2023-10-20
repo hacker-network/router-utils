@@ -1,10 +1,9 @@
-import logging
 from logging.handlers import RotatingFileHandler
-from logging import Formatter
+from logging import Formatter, root as root_logger, INFO
 
 
-def setup_root_logger(path: str):
-  logging.root.level = logging.INFO
+def init_logger(path: str):
+  root_logger.level = INFO
   handler = RotatingFileHandler(path, maxBytes=100 << 20, backupCount=1)
   handler.setFormatter(Formatter("%(asctime)s %(levelname)s %(message)s"))
-  logging.root.addHandler(handler)
+  root_logger.addHandler(handler)

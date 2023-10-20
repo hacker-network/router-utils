@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from logger import setup_root_logger
-from logging import error
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -18,7 +16,8 @@ def login(username: str, password: str, headless: bool = True):
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
 
-  driver = Chrome(options=options, service=ChromeService("/usr/bin/chromedriver"))
+  driver = Chrome(options=options,
+                  service=ChromeService("/usr/bin/chromedriver"))
   driver.set_page_load_timeout(10)
   driver.set_script_timeout(10)
 
@@ -37,14 +36,18 @@ def login(username: str, password: str, headless: bool = True):
 
 if __name__ == "__main__":
   from argparse import ArgumentParser
+  from logger import init_logger
+  from logging import error
 
   parser = ArgumentParser("qsh-ct-login")
   parser.add_argument("username")
   parser.add_argument("password")
-  parser.add_argument("--show-browser", help="show Chromium browser window", action="store_true")
+  parser.add_argument("--show-browser",
+                      help="show Chromium browser window",
+                      action="store_true")
   args = parser.parse_args()
 
-  setup_root_logger("/dev/stderr")
+  init_logger("/dev/stderr")
 
   try:
     login(args.username, args.password, not args.show_browser)
