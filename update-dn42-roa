@@ -1,0 +1,4 @@
+#!/bin/bash
+curl https://dn42.burble.com/roa/dn42_roa_bird2_4.conf > /etc/bird/dn42_roa_v4.conf
+curl https://dn42.burble.com/roa/dn42_roa_bird2_6.conf > /etc/bird/dn42_roa_v6.conf
+/usr/sbin/birdc c
