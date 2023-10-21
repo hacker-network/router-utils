@@ -2,7 +2,6 @@
 from pyroute2 import IPRoute
 from gateway import get_gateway
 from logging import error, info, warning
-from logging.handlers import RotatingFileHandler
 import os
 from qsh_ct_login import login
 from selenium.common.exceptions import TimeoutException
@@ -18,20 +17,20 @@ def check_online() -> bool:
   return ping.returncode == 0
 
 
-def get_link(ifname):
+def link_state(ifname):
   with IPRoute() as ipr:
     if not (id := ipr.link_lookup(ifname=ifname)) or len(id) == 0:
       return None
     link = ipr.get_links(id[0])[0]
-    return link
+    return next(filter(lambda x: x[0] == "IFLA_OPERSTATE", link["attrs"]))[1]
 
 
 def keepalive(ifname: str, username: str, password: str) -> int:
   # Check link state
-  if not (link := get_link(ifname)):
+  if not (state := link_state(ifname)):
     error(f"Uplink interface {ifname} not found.")
     return 1
-  elif link["state"] != "up":
+  elif state != "UP":
     error(f"Uplink interface {ifname} not up. Giving up.")
     return 1
 
@@ -67,6 +66,7 @@ def keepalive(ifname: str, username: str, password: str) -> int:
       error(f"Login failed: {e}")
       return 1
 
+  # Check online again
   if check_online():
     info("Network is online after login.")
     return 0
@@ -86,7 +86,7 @@ if __name__ == "__main__":
   parser.add_argument("username", help="Login username")
   parser.add_argument("password", help="Login password")
   parser.add_argument("-e", "--stderr",
-                      help="Logs to stderr instead of file, even if run as root",
+                      help="Logs to stderr instead of file when run as root",
                       action="store_true")
   args = parser.parse_args()
 
