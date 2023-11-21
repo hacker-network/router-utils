@@ -1,6 +1,8 @@
 ## hack3ric's Router Utilities
 
-Written for Debian 12 and uses only Debian-packaged Python libraries.
+Scripts useful in network maintainance. Mix of Bash and Python. Probably should have packaged as .deb.
+
+Written for Debian 12 and uses only Debian-packaged binaries and Python libraries.
 
 ## Requirements
 
