@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+
+# Get default gateway of the operating system (programmatically using
+# pyroute2).
+#
+# This script is somewhat slow with huge routing table, as it would need to
+# enumerate all of the entries and find the default one. May just switch to
+# Bash script extracting gateway from `ip r`.
+
 import pyroute2
 from socket import AF_INET, AF_INET6, AddressFamily
 

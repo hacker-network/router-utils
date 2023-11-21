@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Keep BIRD informed of default gateway information.
+
 gateway_path="$(dirname "$0")/gateway"
 tmp=`mktemp`
 

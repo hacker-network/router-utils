@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Used for updating dynamic IPv6 *only*. Most dynamic DNS updaters I tried are
-# simply broken when it comes to NATted IPv4 and public IPv6.
+# Used for updating dynamic IPv6 *only* to Cloudflare. Most dynamic DNS
+# updaters I tried are simply broken when it comes to NATted IPv4 and public
+# IPv6.
 #
 # Usage: ./cf-ddns-v6 <zone> <record> <token> <interface>
 
