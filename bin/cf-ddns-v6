@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Used for updating dynamic IPv6 *only*. Most dynamic DNS updaters I tried are
+# simply broken when it comes to NATted IPv4 and public IPv6.
+#
+# Usage: ./cf-ddns-v6 <zone> <record> <token> <interface>
+
+set -e
+
+_api=https://api.cloudflare.com/client/v4
+_zone="$1"
+_record="$2"
+_token="$3"
+_args=(
+  -s
+  -H "Content-Type: application/json"
+  -H "Authorization: Bearer $_token"
+)
+
+_ip=$(ip -6 a s "$4" | grep inet6 | awk -F '[ \t]+|/' '{print $3}' | grep -v ^fe80)
+if [ -z $_ip ]; then
+  echo >&2 error: IP address empty
+  exit 1
+fi
+echo IP to update: $_ip
+
+_zone_id=$(curl -X GET "${_args[@]}" $_api/zones | jq -r '.result[] | select(.name == '"\"$_zone\""') | .id')
+echo Zone ID of $_zone: $_zone_id
+
+_record_id=$(curl -X GET "${_args[@]}" $_api/zones/$_zone_id/dns_records | jq -r '.result[] | select(.name == '"\"$_record\""') | .id')
+echo Record ID of $_record: $_record_id
+
+_data=$(jq -n \
+  --arg name $_record \
+  --arg type AAAA \
+  --arg content $_ip \
+  --argjson proxied false \
+  --argjson ttl 60 \
+  '$ARGS.named')
+
+curl -X PUT "${_args[@]}" -d "$_data" $_api/zones/$_zone_id/dns_records/$_record_id | jq
